@@ -42,3 +42,25 @@ class Teacher(models.Model):
 
     def __str__(self):
         return self.profile.user.username
+
+
+class Group(models.Model):
+    """Группа."""
+    name = models.CharField('name', max_length=150,
+                            help_text='Group name', unique=True)
+    is_primary = models.BooleanField('is_primary', default=False,
+                                     help_text='Indicates is the group primary')
+
+    def __str__(self):
+        return 'Group: ' + self.name + '; verified: ' + str(self.is_primary)
+
+
+class StudentGroup(models.Model):
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (("group", "student"),)
+
+    def __str__(self):
+        return 'Group: ' + self.group.name + '; Login: ' + self.student.user.username

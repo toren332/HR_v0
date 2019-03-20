@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import password_validation
-from profiles.models import Profile, Student, Teacher
+from profiles.models import Profile, Student, Teacher, StudentGroup
 from django.db.models import Q
 
 
@@ -34,6 +34,13 @@ class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teacher
         fields = ['profile', ]
+
+
+class StudentGroupSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = StudentGroup
+        fields = ('student', 'group')
 
 
 class SignupSerializer(serializers.Serializer):
