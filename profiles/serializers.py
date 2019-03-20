@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import password_validation
-from profiles.models import Profile, Student, Teacher, StudentGroup
+from profiles.models import Profile, Student, Teacher, StudentGroup, Group
 from django.db.models import Q
 
 
@@ -32,11 +32,34 @@ class StudentSerializer(serializers.ModelSerializer):
     profile = serializers.PrimaryKeyRelatedField(queryset=Profile.objects.all(), required=False)
 
     class Meta:
-        model = Teacher
+        model = Student
         fields = ['profile', ]
 
 
+class GroupSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Group
+        fields = ('name', 'is_primary', 'id')
+
+
 class StudentGroupSerializer(serializers.ModelSerializer):
+
+    @staticmethod
+    def validate_student(student: Student) -> Student:
+        if not Student.objects.filter(profile__user_id=student.profile.user_id):
+            msg = 'There is no this student id'
+            raise serializers.ValidationError(msg)
+        return student
+
+    def create(self, validated_data: dict) -> StudentGroup:
+        student = validated_data.pop('student')
+        group = validated_data.pop('group')
+
+        student_group = StudentGroup(student=student, group=group)
+        student_group.save()
+
+        return student_group
 
     class Meta:
         model = StudentGroup
