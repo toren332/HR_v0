@@ -62,4 +62,25 @@ class StudentGroup(models.Model):
         unique_together = (("group", "student"),)
 
     def __str__(self):
-        return 'Group: ' + self.group.name + '; Login: ' + self.student.user.username
+        return 'Group: ' + self.group.name + '; Login: ' + self.student.profile.user.username
+
+
+class Lesson(models.Model):
+    """Занятие."""
+    name = models.CharField('lesson name', max_length=150, blank=False,
+                            help_text='lesson name')
+
+    TYPE_CHOICES = (
+        ('class', 'class'),
+        ('lecture', 'lecture')
+    )
+    type = models.CharField(choices=TYPE_CHOICES, default='class', max_length=7)
+    primary_teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, blank=False, related_name='primary_teacher')
+    secondary_teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, blank=True, null=True,
+                                          related_name='secondary_teacher')
+
+    class Meta:
+        unique_together = (("name", "type", "primary_teacher"),)
+
+    def __str__(self):
+        return self.name + ' - ' + self.type

@@ -10,6 +10,7 @@ router.register('profiles', profiles_views.ProfileViewSet, basename='profiles')
 router.register('teachers', profiles_views.TeacherViewSet, basename='teachers')
 router.register('students', profiles_views.StudentViewSet, basename='students')
 router.register('groups', profiles_views.GroupViewSet, basename='groups')
+router.register('lessons', profiles_views.LessonViewSet, basename='lessons')
 
 
 urlpatterns = router.urls

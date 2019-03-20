@@ -53,9 +53,9 @@ class AccountViewSet(viewsets.ViewSet):
         if request.user.is_authenticated:
             user = request.user
             auth.logout(request)
-            response = {"logout from "+str(user.id): True}
+            response = {"logout from " + str(user.id): True}
         else:
-            response ={"logout": False}
+            response = {"logout": False}
         return Response(response, status=status.HTTP_200_OK)
 
 
@@ -90,10 +90,12 @@ class StudentViewSet(viewsets.ModelViewSet):
         data = request.data
         data['student'] = pk
         if not models.StudentGroup.objects.filter(student=data['student'], group=data['group']):
-            return Response(["there is no student " + str(data['student']) + " from group " + str(data['group'])], status=status.HTTP_400_BAD_REQUEST)
+            return Response(["there is no student " + str(data['student']) + " from group " + str(data['group'])],
+                            status=status.HTTP_400_BAD_REQUEST)
         student_group = models.StudentGroup.objects.get(student=data['student'], group=data['group'])
         student_group.delete()
-        return Response(["student " + str(data['student']) + " exit from " + str(data['group'])], status=status.HTTP_200_OK)
+        return Response(["student " + str(data['student']) + " exit from " + str(data['group'])],
+                        status=status.HTTP_200_OK)
 
 
 class TeacherViewSet(viewsets.ModelViewSet):
@@ -104,3 +106,8 @@ class TeacherViewSet(viewsets.ModelViewSet):
 class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.GroupSerializer
     queryset = models.Group.objects.all()
+
+
+class LessonViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.LessonSerializer
+    queryset = models.Lesson.objects.all()
