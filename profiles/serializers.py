@@ -13,10 +13,27 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=False)
 
     class Meta:
         model = Profile
         fields = ['user', 'first_name', 'middle_name', 'last_name', 'is_verified', 'is_admin', 'kind']
+
+
+class TeacherSerializer(serializers.ModelSerializer):
+    profile = serializers.PrimaryKeyRelatedField(queryset=Profile.objects.all(), required=False)
+
+    class Meta:
+        model = Teacher
+        fields = ['profile', ]
+
+
+class StudentSerializer(serializers.ModelSerializer):
+    profile = serializers.PrimaryKeyRelatedField(queryset=Profile.objects.all(), required=False)
+
+    class Meta:
+        model = Teacher
+        fields = ['profile', ]
 
 
 class SignupSerializer(serializers.Serializer):
@@ -90,4 +107,3 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError(error_msg)
 
         return data
-

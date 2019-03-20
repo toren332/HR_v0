@@ -67,3 +67,13 @@ class UserViewSet(viewsets.ModelViewSet):
 class ProfileViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ProfileSerializer
     queryset = models.Profile.objects.all()
+
+
+class StudentViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.StudentSerializer
+    queryset = models.Student.objects.all()
+
+
+class TeacherViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.TeacherSerializer
+    queryset = models.Teacher.objects.all()
