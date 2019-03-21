@@ -103,6 +103,11 @@ class TeacherViewSet(viewsets.ModelViewSet):
     queryset = models.Teacher.objects.all()
 
 
+class ClientViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.ClientSerializer
+    queryset = models.Client.objects.all()
+
+
 class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.GroupSerializer
     queryset = models.Group.objects.all()

@@ -1,11 +1,12 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import password_validation
-from profiles.models import Profile, Student, Teacher, StudentGroup, Group, Lesson
+from profiles.models import Profile, Student, Teacher, StudentGroup, Group, Lesson, Client
 from django.db.models import Q
 
 
 class UserSerializer(serializers.ModelSerializer):
+    # TODO: запретить удаление пользователя, ТЕ заменить на deactivate
 
     class Meta:
         model = User
@@ -14,6 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=False)
+    # TODO: запретить удаление profile и редактирование User
 
     class Meta:
         model = Profile
@@ -21,6 +23,8 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class TeacherSerializer(serializers.ModelSerializer):
+    # TODO: запретить создание и удаление Teacher и редактирование Profile
+
     profile = serializers.PrimaryKeyRelatedField(queryset=Profile.objects.all(), required=False)
 
     class Meta:
@@ -29,6 +33,18 @@ class TeacherSerializer(serializers.ModelSerializer):
 
 
 class StudentSerializer(serializers.ModelSerializer):
+    # TODO: запретить создание и удаление Student и редактирование Profile
+
+    profile = serializers.PrimaryKeyRelatedField(queryset=Profile.objects.all(), required=False)
+
+    class Meta:
+        model = Student
+        fields = ['profile', ]
+
+
+class ClientSerializer(serializers.ModelSerializer):
+    # TODO: запретить создание и удаление Client и редактирование Profile
+
     profile = serializers.PrimaryKeyRelatedField(queryset=Profile.objects.all(), required=False)
 
     class Meta:
@@ -44,7 +60,7 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class LessonSerializer(serializers.ModelSerializer):
-
+    # TODO: запретить ставить себя как второго учителя
     class Meta:
         model = Lesson
         fields = ('name', 'type', 'primary_teacher', 'secondary_teacher', 'id')
@@ -118,10 +134,12 @@ class SignupSerializer(serializers.Serializer):
         if kind == 'student':
             student = Student.objects.create(profile_id=profile.user_id)
             student.save()
-        else:
+        elif kind == 'teacher':
             teacher = Teacher.objects.create(profile_id=profile.user_id)
             teacher.save()
-
+        else:
+            client = Client.objects.create(profile_id=profile.user_id)
+            client.save()
         return profile
 
 

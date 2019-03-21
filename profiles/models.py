@@ -18,7 +18,8 @@ class Profile(models.Model):
                                    help_text='Indicates account has been admin for identity')
     PROFILE_KIND = (
         ('teacher', 'Teacher'),
-        ('student', 'Student')
+        ('student', 'Student'),
+        ('client', 'Client'),
     )
     kind = models.CharField(choices=PROFILE_KIND, default='student', max_length=7,
                             help_text='Indicates account type student or teacher')
@@ -37,6 +38,14 @@ class Student(models.Model):
 
 class Teacher(models.Model):
     """Профиль учителя."""
+    profile = models.OneToOneField(Profile, on_delete=models.CASCADE, primary_key=True)
+
+    def __str__(self):
+        return self.profile.user.username
+
+
+class Client(models.Model):
+    """Профиль клиента."""
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE, primary_key=True)
 
     def __str__(self):
