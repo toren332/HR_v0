@@ -8,6 +8,8 @@ from rest_framework.response import Response
 from . import models
 from . import serializers
 
+# ACCOUNTS BLOCK
+
 
 class AccountViewSet(viewsets.ViewSet):
 
@@ -108,6 +110,9 @@ class ClientViewSet(viewsets.ModelViewSet):
     queryset = models.Client.objects.all()
 
 
+# OBJECTS BLOCK
+
+
 class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.GroupSerializer
     queryset = models.Group.objects.all()
@@ -116,3 +121,9 @@ class GroupViewSet(viewsets.ModelViewSet):
 class LessonViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.LessonSerializer
     queryset = models.Lesson.objects.all()
+
+
+class UniversityViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.UniversitySerializer
+    queryset = models.University.objects.all()
+

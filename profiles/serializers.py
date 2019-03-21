@@ -1,8 +1,10 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import password_validation
-from profiles.models import Profile, Student, Teacher, StudentGroup, Group, Lesson, Client
+from . import models
 from django.db.models import Q
+
+# ACCOUNTS BLOCK
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -15,82 +17,98 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=False)
+
     # TODO: запретить удаление profile и редактирование User
 
     class Meta:
-        model = Profile
+        model = models.Profile
         fields = ['user', 'first_name', 'middle_name', 'last_name', 'is_verified', 'is_admin', 'kind']
 
 
 class TeacherSerializer(serializers.ModelSerializer):
     # TODO: запретить создание и удаление Teacher и редактирование Profile
 
-    profile = serializers.PrimaryKeyRelatedField(queryset=Profile.objects.all(), required=False)
+    profile = serializers.PrimaryKeyRelatedField(queryset=models.Profile.objects.all(), required=False)
 
     class Meta:
-        model = Teacher
+        model = models.Teacher
         fields = ['profile', ]
 
 
 class StudentSerializer(serializers.ModelSerializer):
     # TODO: запретить создание и удаление Student и редактирование Profile
 
-    profile = serializers.PrimaryKeyRelatedField(queryset=Profile.objects.all(), required=False)
+    profile = serializers.PrimaryKeyRelatedField(queryset=models.Profile.objects.all(), required=False)
 
     class Meta:
-        model = Student
+        model = models.Student
         fields = ['profile', ]
 
 
 class ClientSerializer(serializers.ModelSerializer):
     # TODO: запретить создание и удаление Client и редактирование Profile
 
-    profile = serializers.PrimaryKeyRelatedField(queryset=Profile.objects.all(), required=False)
+    profile = serializers.PrimaryKeyRelatedField(queryset=models.Profile.objects.all(), required=False)
 
     class Meta:
-        model = Student
+        model = models.Student
         fields = ['profile', ]
 
 
-class GroupSerializer(serializers.ModelSerializer):
+# OBJECTS BLOCK
 
+
+class GroupSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Group
+        model = models.Group
         fields = ('name', 'is_primary', 'id')
 
 
 class LessonSerializer(serializers.ModelSerializer):
     # TODO: запретить ставить себя как второго учителя
     class Meta:
-        model = Lesson
+        model = models.Lesson
         fields = ('name', 'type', 'primary_teacher', 'secondary_teacher', 'id')
+
+
+class UniversitySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Lesson
+        fields = ('name', 'description')
+
+
+# OBJECTS TRASH BLOCK
 
 
 class StudentGroupSerializer(serializers.ModelSerializer):
 
     @staticmethod
-    def validate_student(student: Student) -> Student:
-        if not Student.objects.filter(profile__user_id=student.profile.user_id):
+    def validate_student(student: models.Student) -> models.Student:
+        if not models.Student.objects.filter(profile__user_id=student.profile.user_id):
             msg = 'There is no this student id'
             raise serializers.ValidationError(msg)
         return student
 
-    def create(self, validated_data: dict) -> StudentGroup:
+    def create(self, validated_data: dict) -> models.StudentGroup:
         student = validated_data.pop('student')
         group = validated_data.pop('group')
 
-        student_group = StudentGroup(student=student, group=group)
+        student_group = models.StudentGroup(student=student, group=group)
         student_group.save()
 
         return student_group
 
     class Meta:
-        model = StudentGroup
+        model = models.StudentGroup
         fields = ('student', 'group')
 
 
+# AUTHORIZATION/authentication BLOCK
+
+
 class SignupSerializer(serializers.Serializer):
-    PROFILE_KIND_CHOICES = Profile.PROFILE_KIND
+    PROFILE_KIND_CHOICES = models.Profile.PROFILE_KIND
     username = serializers.CharField(max_length=128, required=True)
     email = serializers.EmailField(required=True)
     password = serializers.CharField(max_length=128, required=True)
@@ -128,17 +146,17 @@ class SignupSerializer(serializers.Serializer):
         user.username = username
         user.save()
 
-        profile = Profile.objects.create(user_id=user.id, kind=kind)
+        profile = models.Profile.objects.create(user_id=user.id, kind=kind)
         profile.save()
 
         if kind == 'student':
-            student = Student.objects.create(profile_id=profile.user_id)
+            student = models.Student.objects.create(profile_id=profile.user_id)
             student.save()
         elif kind == 'teacher':
-            teacher = Teacher.objects.create(profile_id=profile.user_id)
+            teacher = models.Teacher.objects.create(profile_id=profile.user_id)
             teacher.save()
         else:
-            client = Client.objects.create(profile_id=profile.user_id)
+            client = models.Client.objects.create(profile_id=profile.user_id)
             client.save()
         return profile
 

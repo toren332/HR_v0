@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+# ACCOUNTS BLOCK
+
+
 class Profile(models.Model):
     """Профиль пользователя."""
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
@@ -52,6 +55,9 @@ class Client(models.Model):
         return self.profile.user.username
 
 
+# OBJECTS BLOCK
+
+
 class Group(models.Model):
     """Группа."""
     name = models.CharField('name', max_length=150,
@@ -61,17 +67,6 @@ class Group(models.Model):
 
     def __str__(self):
         return 'Group: ' + self.name + '; verified: ' + str(self.is_primary)
-
-
-class StudentGroup(models.Model):
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = (("group", "student"),)
-
-    def __str__(self):
-        return 'Group: ' + self.group.name + '; Login: ' + self.student.profile.user.username
 
 
 class Lesson(models.Model):
@@ -93,3 +88,58 @@ class Lesson(models.Model):
 
     def __str__(self):
         return self.name + ' - ' + self.type
+
+
+class University(models.Model):
+    """Университет."""
+    name = models.CharField('university name', max_length=150, blank=False, unique=True,
+                            help_text='university name')
+
+    english_name = models.CharField('university english name', max_length=150, blank=False, unique=True,
+                                    primary_key=True,
+                                    help_text='university english name')  # нужно для использования PK
+
+    description = models.CharField('university description', max_length=5000, blank=True,
+                                   help_text='university description')
+
+    def __str__(self):
+        return self.name
+
+
+class Building(models.Model):
+    """Строение."""
+    name = models.CharField('building name', max_length=150, blank=False, unique=True, primary_key=True,
+                            help_text='building name')
+
+    address = models.CharField('building address', max_length=5000, blank=True,
+                               help_text='building address')
+
+    university = models.ForeignKey(University, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+
+class Auditory(models.Model):
+    """Аудитория."""
+    name = models.CharField('auditory name', max_length=50, blank=False, unique=True, primary_key=True,
+                            help_text='auditory name')
+
+    building = models.ForeignKey(Building, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+
+# OBJECTS TRASH BLOCK
+
+
+class StudentGroup(models.Model):
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (("group", "student"),)
+
+    def __str__(self):
+        return 'Group: ' + self.group.name + '; Login: ' + self.student.profile.user.username
