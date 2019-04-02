@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api_v0',
     'rest_framework',
-    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -70,11 +69,6 @@ TEMPLATES = [
         },
     },
 ]
-
-GRAPH_MODELS = {
-  'all_applications': True,
-  'group_models': True,
-}
 
 WSGI_APPLICATION = 'HR_v0.wsgi.application'
 
