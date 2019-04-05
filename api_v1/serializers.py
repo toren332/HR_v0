@@ -111,7 +111,7 @@ class SignupSerializer(serializers.Serializer):
     PROFILE_KIND_CHOICES = models.Profile.PROFILE_KIND
     username = serializers.CharField(max_length=128, required=True)
     email = serializers.EmailField(required=True)
-    password = serializers.CharField(max_length=128, required=True)
+    password = serializers.CharField(max_length=128, required=True)  # TODO: validators (kwargs)
     kind = serializers.ChoiceField(PROFILE_KIND_CHOICES, required=True)
 
     @staticmethod
@@ -122,12 +122,12 @@ class SignupSerializer(serializers.Serializer):
         return email
 
     @staticmethod
-    def validate_password(password: str) -> str:
+    def validate_password(password: str) -> str:  # TODO: get rid of it
         password_validation.validate_password(password)
         return password
 
     @staticmethod
-    def validate_username(username: str) -> str:
+    def validate_username(username: str) -> str:  # TODO: get rid of it
         if User.objects.filter(username=username).exists():
             msg = 'Someone already has an account with the username'
             raise serializers.ValidationError(msg)
@@ -139,13 +139,15 @@ class SignupSerializer(serializers.Serializer):
         email = validated_data.pop('email')
         kind = validated_data.pop('kind')
 
+        # TODO: use User.objects.create
         user = User()
         user.email = email
         user.set_password(password)
-        user.is_active = True
+        # user.is_active = True
         user.username = username
         user.save()
 
+        #
         profile = models.Profile.objects.create(user_id=user.id, kind=kind)
         profile.save()
 
@@ -158,6 +160,7 @@ class SignupSerializer(serializers.Serializer):
         else:
             client = models.Client.objects.create(profile_id=profile.user_id)
             client.save()
+
         return profile
 
 

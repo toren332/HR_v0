@@ -8,14 +8,16 @@ from rest_framework.response import Response
 from profiles import models
 from . import serializers
 
+# TODO: i18n where is it? dude?
+
 # ACCOUNTS BLOCK
 
 
 class AccountViewSet(viewsets.ViewSet):
+    # TODO: functional tests
 
     @action(detail=False, methods=['POST'])
-    def signup(self, request):
-
+    def signup(self, request: 'Response') -> 'Response':
         serializer = serializers.SignupSerializer(data=request.data)
         if not serializer.is_valid():
             raise ValidationError(serializer.errors)
@@ -62,6 +64,7 @@ class AccountViewSet(viewsets.ViewSet):
 
 
 class UserViewSet(viewsets.ModelViewSet):
+    # TODO: smoke test (check for status_code only)
     serializer_class = serializers.UserSerializer
     queryset = models.User.objects.all()
 
@@ -90,10 +93,14 @@ class StudentViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['POST'])
     def exit_group(self, request, pk=None):
         data = request.data
-        data['student'] = pk
+        data['student'] = pk  # TODO: wtf?
+
         if not models.StudentGroup.objects.filter(student=data['student'], group=data['group']):
-            return Response(["there is no student " + str(data['student']) + " from group " + str(data['group'])],
-                            status=status.HTTP_400_BAD_REQUEST)
+            payload = {
+                'msg': "there is no student " + str(data['student']) + " from group " + str(data['group'])
+            }
+            return Response(payload, status=status.HTTP_400_BAD_REQUEST)
+
         student_group = models.StudentGroup.objects.get(student=data['student'], group=data['group'])
         student_group.delete()
         return Response(["student " + str(data['student']) + " exit from " + str(data['group'])],

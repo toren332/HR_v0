@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 
 # ACCOUNTS BLOCK
+from profiles.querysets import ProfileQuerySet
 
 
 class Profile(models.Model):
@@ -26,6 +27,8 @@ class Profile(models.Model):
     )
     kind = models.CharField(choices=PROFILE_KIND, default='student', max_length=7,
                             help_text='Indicates account type student or teacher')
+
+    objects = ProfileQuerySet.as_manager()
 
     def __str__(self):
         return self.user.username + '  –  ' + self.kind

@@ -1,0 +1,6 @@
+Django>=2.2
+djangorestframework>=3.9
+
+psycopg2-binary
+
+django-extensions
